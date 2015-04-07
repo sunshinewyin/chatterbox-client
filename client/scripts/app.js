@@ -10,9 +10,10 @@ var App = function() {
 
 App.prototype.init = function() {
   var context = this;
-  $('#send').submit(function(event){
+  var $form = $('#send');
+  $form.submit(function(event){
     context.handleSubmit();
-    //event.preventDefault();
+    event.preventDefault();
   });
 };
 
@@ -47,7 +48,7 @@ App.prototype.fetch = function () {
   $.ajax({
     url: this.server,
     type: 'GET',
-    data: {order: "-creatdAt"},
+    data: {order: "-createdAt"},
     success: function(dataFromServer){
       for(var i = 0; i < dataFromServer.results.length; ++i) {
         context.addMessage(dataFromServer.results[i]);
@@ -82,6 +83,8 @@ App.prototype.escape = function(text) {
  replace(textArray, "'", '&#x27');
  // / --> &#x2F;
  replace(textArray, '/', '&#x2F');
+
+ return textArray.join("");
 };
 
 App.prototype.addMessage = function (messageData) {
@@ -90,7 +93,7 @@ App.prototype.addMessage = function (messageData) {
   var createdAt = messageData.createdAt;
   var username = messageData.username;
   var $messageBlock = $("<div class='chat'></div>");
-
+  text = this.escape(text);
   var $message = $("<p class='msgText'>" + text + "</p>");
   var $createdAt = $("<p class='timeStamp'>" + createdAt + "</p>");
   var $username = $("<p class='username'>" + username + "</p>");
@@ -98,7 +101,7 @@ App.prototype.addMessage = function (messageData) {
   $username.appendTo($messageBlock);
   $message.appendTo($messageBlock);
   $createdAt.appendTo($messageBlock);
-  $('#chats').prepend($messageBlock);
+  $('#chats').append($messageBlock);
 
   $username.on ("click", function(){
     context.addFriend(username);
@@ -128,8 +131,11 @@ App.prototype.addFriend = function(friendName) {
 
 };
 
+$(document).ready(function () {
 var app = new App();
+app.init();
 
 setInterval(function(){
   app.fetch();
-}, 1000)
+}, 5000)
+});
