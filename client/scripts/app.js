@@ -111,6 +111,12 @@ App.prototype.addMessage = function (messageData) {
     var $roomName = $("<p class='roomName'> Room: " + roomName + "</p>");
 
 
+    if(this.friends.hasOwnProperty(username)) {
+      $messageBlock.css("font-weight","Bold");
+      $messageBlock.css('font-size',"24px");
+    }
+
+
     $username.appendTo($messageBlock);
     $message.appendTo($messageBlock);
     $createdAt.appendTo($messageBlock);
@@ -132,16 +138,13 @@ App.prototype.addRoom = function(roomName) {
 };
 
 App.prototype.addFriend = function(friendName) {
-  if(this.friends.hasOwnProperty(friendName)) {
-    return;
+  if(!this.friends.hasOwnProperty(friendName)) {
+    this.friends[friendName] = friendName;
+
+    $friendsList = $('.friendsList');
+    $friendName = $("<li>" + friendName + "</li>");
+    $friendsList.append($friendName);
   }
-
-  this.friends[friendName] = friendName;
-
-  $friendsList = $('.friendsList');
-  $friendName = $("<li>" + friendName + "</li>");
-  $friendsList.append($friendName);
-
 };
 
 $(document).ready(function () {
