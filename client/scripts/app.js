@@ -29,6 +29,11 @@ App.prototype.send = function(message) {
   });
 };
 
+App.prototype.handleSubmit = function() {
+  var message =
+  this.send(message);
+};
+
 App.prototype.fetch = function () {
   var context = this;
   $.ajax({
@@ -47,15 +52,22 @@ App.prototype.clearMessages = function() {
 };
 
 App.prototype.addMessage = function (messageData) {
+  var context = this;
   var text = messageData.text;
   var createdAt = messageData.createdAt;
+  var username = messageData.username;
   var $messageBlock = $("<div class='message'></div>");
   var $message = $("<p>" + text + "</p>");
   var $createdAt = $("<p>" + createdAt + "</p>");
+  var $username = $("<p class='username'>" + username + "</p>");
 
   $createdAt.appendTo($messageBlock);
   $message.appendTo($messageBlock);
+  $username.appendTo($messageBlock);
   $('#chats').prepend($messageBlock);
+  $username.on ("click", function(){
+    context.addFriend(username);
+  });
 };
 
 App.prototype.addRoom = function(roomName) {
@@ -74,7 +86,15 @@ App.prototype.addFriend = function(friendName) {
   }
 
   this.friends[friendName] = friendName;
-}
+
+  $friendsList = $('.friendsList');
+  $friendName = $("<li>" + friendName + "</li>");
+  $friendsList.append($friendName);
+
+};
 
 
 var app = new App();
+setInterval(function(){
+  app.fetch();
+}, 1000)
