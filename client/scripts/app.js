@@ -9,7 +9,11 @@ var App = function() {
 };
 
 App.prototype.init = function() {
-
+  var context = this;
+  $('#send').submit(function(event){
+    context.handleSubmit();
+    //event.preventDefault();
+  });
 };
 
 App.prototype.send = function(message) {
@@ -30,8 +34,12 @@ App.prototype.send = function(message) {
 };
 
 App.prototype.handleSubmit = function() {
-  var message =
-  this.send(message);
+  var messageObject = {};
+  messageObject.username = 'defaultName';
+  messageObject.text = $('#message').val();
+  messageObject.roomName = 'theWooRoom';
+
+  this.send(messageObject);
 };
 
 App.prototype.fetch = function () {
@@ -39,6 +47,7 @@ App.prototype.fetch = function () {
   $.ajax({
     url: this.server,
     type: 'GET',
+    data: {order: "-creatdAt"},
     success: function(dataFromServer){
       for(var i = 0; i < dataFromServer.results.length; ++i) {
         context.addMessage(dataFromServer.results[i]);
@@ -51,20 +60,46 @@ App.prototype.clearMessages = function() {
   $('#chats').children().remove();
 };
 
+App.prototype.escape = function(text) {
+ var textArray = text.split("");
+
+ var replace = function(array, dangerItem, safeItem) {
+   var index = array.indexOf(dangerItem);
+   while(index !== -1) {
+    array.splice(index,1,safeItem);
+    index = array.indexOf(dangerItem);
+   }
+ };
+ // & --> &amp;
+ replace(textArray, '&', '&amp');
+ // < --> &lt;
+ replace(textArray, '<', '&lt');
+ // > --> &gt;
+ replace(textArray, '>', '&gt');
+ // " --> &quot;
+ replace(textArray, '"', '&quot');
+ // ' --> &#x27;     &apos; not recommended because its not in the HTML spec (See: section 24.4.1) &apos; is in the XML and XHTML specs.
+ replace(textArray, "'", '&#x27');
+ // / --> &#x2F;
+ replace(textArray, '/', '&#x2F');
+};
+
 App.prototype.addMessage = function (messageData) {
   var context = this;
   var text = messageData.text;
   var createdAt = messageData.createdAt;
   var username = messageData.username;
-  var $messageBlock = $("<div class='message'></div>");
-  var $message = $("<p>" + text + "</p>");
-  var $createdAt = $("<p>" + createdAt + "</p>");
+  var $messageBlock = $("<div class='chat'></div>");
+
+  var $message = $("<p class='msgText'>" + text + "</p>");
+  var $createdAt = $("<p class='timeStamp'>" + createdAt + "</p>");
   var $username = $("<p class='username'>" + username + "</p>");
 
-  $createdAt.appendTo($messageBlock);
-  $message.appendTo($messageBlock);
   $username.appendTo($messageBlock);
+  $message.appendTo($messageBlock);
+  $createdAt.appendTo($messageBlock);
   $('#chats').prepend($messageBlock);
+
   $username.on ("click", function(){
     context.addFriend(username);
   });
@@ -93,8 +128,8 @@ App.prototype.addFriend = function(friendName) {
 
 };
 
-
 var app = new App();
+
 setInterval(function(){
   app.fetch();
 }, 1000)

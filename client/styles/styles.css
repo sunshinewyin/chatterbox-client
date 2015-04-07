@@ -1,3 +1,17 @@
+/* clear fix */
+.container:before,
+.container:after {
+  content: "";
+  display: table;
+}
+.container:after {
+  clear: both;
+}
+.container {
+  clear: both;
+  *zoom: 1;
+}
+
 body {
     background: #eee;
     text-align: center;
@@ -60,13 +74,26 @@ form input[type=text] {
 }
 
 .chat {
-    padding: 5px;
-    margin-bottom: 5px;
-    background-color: #eee;
+   background-color: orange;
+    border-radius: 5px;
+    border:solid 2px;
+    padding: 10px;
 }
 
 .chat .username {
     font-weight: 800;
+    float:left;
+    display:inline-block;
+}
+
+.msgText {
+    float:right;
+    display:inline-block;
+};
+
+.timeStamp {
+    float:left;
+    display: inline-block
 }
 
 .chat:hover {
@@ -82,3 +109,4 @@ form input[type=text] {
 .spinner img {
     padding: 10px;
 }
+

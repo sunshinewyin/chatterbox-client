@@ -118,8 +118,10 @@ describe('chatterbox', function() {
         $('#message').val('Why so many Mel Brooks quotes?');
 
         app.init();
+        console.dir(app.handleSubmit);
 
-        $('#send .submit').trigger('submit');
+        $('#send').trigger('submit');
+        console.dir(app.handleSubmit);
         expect(app.handleSubmit.calledOnce).to.be.true;
 
         app.handleSubmit.restore();
